@@ -40,7 +40,7 @@ const sectionConfig = {
       name: "",
       startTime: "",
       endTime: "",
-      timezone: "",
+       timezone: "Asia/Kolkata",
       assignmentDate: new Date().toISOString().slice(0, 10),
       assignedStaffIds: [],
       assignedSupervisorIds: [],
@@ -200,6 +200,7 @@ export default function AdminPage({ auth, onLogout }) {
   const [selectedRow, setSelectedRow] = useState(null);
   const [form, setForm] = useState(sectionConfig.stations.defaults);
   const [lookups, setLookups] = useState({ stations: [], staff: [], supervisors: [] });
+  const [deleteTarget, setDeleteTarget] = useState(null);
 
   const activeConfig = sectionConfig[activeSection];
 
@@ -271,12 +272,16 @@ export default function AdminPage({ auth, onLogout }) {
   }
 
   async function handleDelete(row) {
-    const confirmed = window.confirm(`Delete this ${activeSection.slice(0, -1)} record?`);
-    if (!confirmed) return;
+    setDeleteTarget(row);
+  }
+
+  async function confirmDelete() {
+    if (!deleteTarget) return;
     setError("");
     try {
-      await api.delete(`${activeConfig.endpoint}/${row.id}`);
+      await api.delete(`${activeConfig.endpoint}/${deleteTarget.id}`);
       await loadSection();
+      setDeleteTarget(null);
     } catch (err) {
       setError(err?.response?.data?.message || "Delete failed.");
     }
@@ -648,6 +653,23 @@ export default function AdminPage({ auth, onLogout }) {
               </form>
             )}
           </aside>
+        </div>
+      )}
+
+      {deleteTarget && (
+        <div className="modal-overlay" onClick={() => setDeleteTarget(null)}>
+          <div className="confirm-modal" onClick={(event) => event.stopPropagation()}>
+            <h2>Delete {activeConfig.title.slice(0, -1)}</h2>
+            <p className="muted">Are you sure you want to delete this record?</p>
+            <div className="confirm-actions">
+              <button type="button" className="btn-subtle" onClick={() => setDeleteTarget(null)}>
+                Cancel
+              </button>
+              <button type="button" className="btn-danger" onClick={confirmDelete}>
+                Delete
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </main>
