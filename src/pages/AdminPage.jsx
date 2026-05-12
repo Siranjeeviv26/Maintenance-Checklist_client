@@ -84,6 +84,10 @@ function toDateValue(input) {
   return date.toISOString().slice(0, 10);
 }
 
+function shiftAssignmentDate(row) {
+  return row?.assignments?.[0]?.assignmentDate || row?.assignmentDate;
+}
+
 function normalizeForForm(section, row) {
   if (section === "stations") {
     return { name: row.name || "", code: row.code || "", description: row.description || "" };
@@ -110,7 +114,7 @@ function normalizeForForm(section, row) {
       startTime: row.startTime || "09:00",
       endTime: row.endTime || "17:00",
       timezone: row.timezone || "Asia/Kolkata",
-      assignmentDate: toDateValue(row.assignmentDate),
+      assignmentDate: toDateValue(shiftAssignmentDate(row)),
       assignedStaffIds: staffIds,
       assignedSupervisorIds: supervisorIds,
     };
@@ -161,7 +165,7 @@ function buildPayload(section, form, isEdit) {
       startTime: form.startTime,
       endTime: form.endTime,
       timezone: form.timezone,
-      assignmentDate: new Date(`${form.assignmentDate}T00:00:00`).toISOString(),
+      assignmentDate: `${form.assignmentDate}T00:00:00.000Z`,
       assignedStaffIds: form.assignedStaffIds,
       assignedSupervisorIds: form.assignedSupervisorIds,
     };
@@ -521,7 +525,7 @@ export default function AdminPage({ auth, onLogout }) {
             <dt>Shift</dt><dd>{selectedRow.name || "-"}</dd>
             <dt>Time</dt><dd>{selectedRow.startTime} - {selectedRow.endTime}</dd>
             <dt>Timezone</dt><dd>{selectedRow.timezone || "-"}</dd>
-            <dt>Date</dt><dd>{toDateValue(selectedRow.assignmentDate)}</dd>
+            <dt>Date</dt><dd>{toDateValue(shiftAssignmentDate(selectedRow))}</dd>
           </dl>
           <div>
             <p className="muted">Assigned Staff</p>
