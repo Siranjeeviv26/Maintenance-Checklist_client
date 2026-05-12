@@ -7,36 +7,15 @@ import StaffPage from "./pages/StaffPage";
 import SupervisorPage from "./pages/SupervisorPage";
 
 const HOME_IMG = {
-  hero: "https://images.unsplash.com/photo-1581092160562-40aa08e2c257?auto=format&fit=crop&w=1600&q=80",
-  heroFallback: "https://picsum.photos/1600/900?blur=1",
   admin: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=800&q=80",
   staff: "https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=800&q=80",
   supervisor: "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=800&q=80",
 };
 
 function HomePage() {
-  const [heroSrc, setHeroSrc] = useState(HOME_IMG.hero);
-
-  function onHeroError() {
-    if (heroSrc !== HOME_IMG.heroFallback) {
-      setHeroSrc(HOME_IMG.heroFallback);
-    }
-  }
-
   return (
     <main className="home-page">
       <section className="home-hero">
-        <img
-          className="home-hero-bg"
-          src={heroSrc}
-          alt=""
-          width={1600}
-          height={900}
-          decoding="async"
-          loading="eager"
-          referrerPolicy="no-referrer"
-          onError={onHeroError}
-        />
         <div className="home-hero-overlay" />
         <div className="home-hero-inner container">
           <p className="home-eyebrow">Station & facility operations</p>
@@ -56,23 +35,47 @@ function HomePage() {
         <p className="home-section-intro muted">
           Each role has a focused dashboard; sign in with your account to open the right module.
         </p>
+
         <div className="home-card-grid">
           <article className="home-card">
-            <img src={HOME_IMG.admin} alt="" className="home-card-img" width={800} height={520} loading="lazy" />
+            <img
+              src={HOME_IMG.admin}
+              alt=""
+              className="home-card-img"
+              width={800}
+              height={520}
+              loading="lazy"
+            />
             <div className="home-card-body">
               <h3>Admin</h3>
               <p>Stations, users, shifts, templates, and checklist reports.</p>
             </div>
           </article>
+
           <article className="home-card">
-            <img src={HOME_IMG.staff} alt="" className="home-card-img" width={800} height={520} loading="lazy" />
+            <img
+              src={HOME_IMG.staff}
+              alt=""
+              className="home-card-img"
+              width={800}
+              height={520}
+              loading="lazy"
+            />
             <div className="home-card-body">
               <h3>Cleaning staff</h3>
               <p>Today&apos;s shifts, complete checklists, add remarks, submit.</p>
             </div>
           </article>
+
           <article className="home-card">
-            <img src={HOME_IMG.supervisor} alt="" className="home-card-img" width={800} height={520} loading="lazy" />
+            <img
+              src={HOME_IMG.supervisor}
+              alt=""
+              className="home-card-img"
+              width={800}
+              height={520}
+              loading="lazy"
+            />
             <div className="home-card-body">
               <h3>Supervisor</h3>
               <p>Review submissions, approve or reject, browse shift history.</p>
@@ -117,6 +120,7 @@ export default function App() {
 
   async function verifyAuth() {
     if (!auth?.token) return;
+
     try {
       await api.get("/auth/me");
     } catch {
@@ -131,6 +135,7 @@ export default function App() {
   return (
     <Routes>
       <Route path="/" element={<HomePage />} />
+
       <Route
         path="/login"
         element={
@@ -141,6 +146,7 @@ export default function App() {
           )
         }
       />
+
       <Route
         path="/admin"
         element={
@@ -151,6 +157,7 @@ export default function App() {
           )
         }
       />
+
       <Route
         path="/staff"
         element={
@@ -161,6 +168,7 @@ export default function App() {
           )
         }
       />
+
       <Route
         path="/supervisor"
         element={
@@ -171,6 +179,7 @@ export default function App() {
           )
         }
       />
+
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
