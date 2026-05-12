@@ -389,3 +389,13 @@ label { display: grid; gap: 0.35rem; font-size: 0.92rem; }
   padding-left: 1.1rem;
   color: #334155;
 }
+
+.reject-modal {
+  border-top: 4px solid #b91c1c;
+}
+
+.reject-modal textarea:focus {
+  outline: none;
+  border-color: #b91c1c;
+  box-shadow: 0 0 0 3px rgba(185, 28, 28, 0.1);
+}
