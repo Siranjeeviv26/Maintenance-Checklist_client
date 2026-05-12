@@ -7,6 +7,9 @@ export default function SupervisorPage({ auth, onLogout }) {
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [selectedSubmission, setSelectedSubmission] = useState(null);
+  const [rejectModalOpen, setRejectModalOpen] = useState(false);
+  const [rejectTargetId, setRejectTargetId] = useState(null);
+  const [rejectionReason, setRejectionReason] = useState("");
 
   const welcome = useMemo(
     () => `Logged in as ${auth.user.name} (${auth.user.role})`,
@@ -48,18 +51,32 @@ export default function SupervisorPage({ auth, onLogout }) {
   async function reject(id) {
     setError("");
     setMessage("");
-    const rejectionReason = window.prompt("Enter rejection reason", "Incomplete checklist");
-    if (!rejectionReason) return;
+    setRejectTargetId(id);
+    setRejectionReason("Incomplete checklist");
+    setRejectModalOpen(true);
+  }
+
+  async function confirmReject() {
+    if (!rejectTargetId || !rejectionReason.trim()) return;
     try {
-      await api.post(`/supervisor/submissions/${id}/reject`, {
+      await api.post(`/supervisor/submissions/${rejectTargetId}/reject`, {
         supervisorComment: "Rejected",
-        rejectionReason,
+        rejectionReason: rejectionReason.trim(),
       });
       setMessage("Checklist rejected.");
       await loadData();
+      setRejectModalOpen(false);
+      setRejectTargetId(null);
+      setRejectionReason("");
     } catch (err) {
       setError(err?.response?.data?.message || "Reject failed.");
     }
+  }
+
+  function cancelReject() {
+    setRejectModalOpen(false);
+    setRejectTargetId(null);
+    setRejectionReason("");
   }
 
   function renderChecklistItems(submission) {
@@ -217,6 +234,35 @@ export default function SupervisorPage({ auth, onLogout }) {
           </table>
         </section>
       </section>
+
+      {rejectModalOpen && (
+        <div className="modal-overlay" onClick={cancelReject}>
+          <div className="confirm-modal reject-modal" onClick={(event) => event.stopPropagation()}>
+            <h2 style={{ color: "#b91c1c" }}>Reject Checklist</h2>
+            <p className="muted" style={{ marginBottom: "1rem" }}>
+              Please provide a reason for rejecting this checklist submission.
+            </p>
+            <label>
+              Rejection Reason
+              <textarea
+                value={rejectionReason}
+                onChange={(e) => setRejectionReason(e.target.value)}
+                rows={4}
+                placeholder="Enter reason for rejection..."
+                style={{ resize: "vertical" }}
+              />
+            </label>
+            <div className="confirm-actions" style={{ marginTop: "1.25rem" }}>
+              <button type="button" className="btn-subtle" onClick={cancelReject}>
+                Cancel
+              </button>
+              <button type="button" className="btn-danger" onClick={confirmReject} disabled={!rejectionReason.trim()}>
+                Reject Checklist
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
