@@ -14,9 +14,16 @@ export default function LoginPage({ onLogin }) {
     setError("");
     setLoading(true);
     try {
-      const response = await api.post("/auth/login", { email, password });
-      const authData = response.data.data;
-      onLogin(authData);
+      const response = await api.post("/auth/login", {
+        email: email.trim(),
+        password: password.trim(),
+      });
+      const authData = response.data?.data;
+      if (!authData?.token || !authData?.user?.role) {
+        throw new Error("Login response did not include user session data.");
+      }
+
+      await onLogin(authData);
       const role = authData?.user?.role;
       const target =
         role === "admin"
@@ -28,7 +35,11 @@ export default function LoginPage({ onLogin }) {
               : "/";
       navigate(target, { replace: true });
     } catch (err) {
-      setError(err?.response?.data?.message || "Login failed");
+      setError(
+        err?.response?.data?.message ||
+          err?.message ||
+          "Login failed. Please check the API URL and CORS settings."
+      );
     } finally {
       setLoading(false);
     }
