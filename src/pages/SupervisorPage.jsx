@@ -125,7 +125,7 @@ export default function SupervisorPage({ auth, onLogout }) {
     <main className="admin-layout">
       <aside className="admin-sidebar">
         <div>
-          <h2>Supervisor Panel</h2>
+          <h2>{auth.user.panelName || "Supervisor Panel"}</h2>
           <p className="muted">{welcome}</p>
           <button className="nav-btn nav-btn-active">Verification Queue</button>
         </div>
@@ -150,7 +150,6 @@ export default function SupervisorPage({ auth, onLogout }) {
           <table className="data-table">
             <thead>
               <tr>
-                <th>ID</th>
                 <th>Station</th>
                 <th>Shift</th>
                 <th>Staff</th>
@@ -167,12 +166,11 @@ export default function SupervisorPage({ auth, onLogout }) {
                 pending.map((row) => (
                   <React.Fragment key={row.id}>
                     <tr>
-                      <td>{row.id}</td>
-                    <td>{row.station?.name}</td>
-                    <td>{row.shift?.name}</td>
-                    <td>{row.staff?.name}</td>
-                    <td>{row.submittedAt ? new Date(row.submittedAt).toLocaleString() : "-"}</td>
-                    <td className="actions-cell">
+                      <td>{row.station?.name}</td>
+                      <td>{row.shift?.name}</td>
+                      <td>{row.staff?.name}</td>
+                      <td>{row.submittedAt ? new Date(row.submittedAt).toLocaleString() : "-"}</td>
+                      <td className="actions-cell">
                       <button className="btn-subtle" onClick={() => setSelectedSubmission(selectedSubmission?.id === row.id ? null : row)}>
                         {selectedSubmission?.id === row.id ? "Hide Details" : "View Details"}
                       </button>
@@ -202,36 +200,36 @@ export default function SupervisorPage({ auth, onLogout }) {
 
         <section className="table-card">
           <h2>History</h2>
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Status</th>
-                <th>Station</th>
-                <th>Shift</th>
-                <th>Staff</th>
-                <th>Supervisor</th>
-              </tr>
-            </thead>
-            <tbody>
-              {history.length === 0 ? (
+          <div className="history-scroll-container">
+            <table className="data-table">
+              <thead>
                 <tr>
-                  <td colSpan={6}>No history available.</td>
+                  <th>Status</th>
+                  <th>Station</th>
+                  <th>Shift</th>
+                  <th>Staff</th>
+                  <th>Supervisor</th>
                 </tr>
-              ) : (
-                history.map((row) => (
-                  <tr key={row.id}>
-                    <td>{row.id}</td>
-                    <td>{row.status}</td>
-                    <td>{row.station?.name || "-"}</td>
-                    <td>{row.shift?.name || "-"}</td>
-                    <td>{row.staff?.name || "-"}</td>
-                    <td>{row.supervisor?.name || "-"}</td>
+              </thead>
+              <tbody>
+                {history.length === 0 ? (
+                  <tr>
+                    <td colSpan={6}>No history available.</td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                ) : (
+                  history.map((row) => (
+                    <tr key={row.id}>
+                      <td>{row.status}</td>
+                      <td>{row.station?.name || "-"}</td>
+                      <td>{row.shift?.name || "-"}</td>
+                      <td>{row.staff?.name || "-"}</td>
+                      <td>{row.supervisor?.name || "-"}</td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
         </section>
       </section>
 

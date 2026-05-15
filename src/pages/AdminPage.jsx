@@ -6,7 +6,7 @@ const sectionConfig = {
     title: "Stations",
     endpoint: "/admin/stations",
     columns: [
-      { key: "id", label: "ID" },
+     // { key: "id", label: "ID" },
       { key: "name", label: "Name" },
       { key: "code", label: "Code" },
       { key: "isActive", label: "Active" },
@@ -17,7 +17,7 @@ const sectionConfig = {
     title: "Users",
     endpoint: "/admin/users",
     columns: [
-      { key: "id", label: "ID" },
+      //{ key: "id", label: "ID" },
       { key: "name", label: "Name" },
       { key: "email", label: "Email" },
       { key: "role", label: "Role" },
@@ -29,7 +29,7 @@ const sectionConfig = {
     title: "Shifts",
     endpoint: "/admin/shifts",
     columns: [
-      { key: "id", label: "ID" },
+      //{ key: "id", label: "ID" },
       { key: "name", label: "Shift" },
       { key: "station.name", label: "Station" },
       { key: "startTime", label: "Start" },
@@ -50,7 +50,7 @@ const sectionConfig = {
     title: "Templates",
     endpoint: "/admin/templates",
     columns: [
-      { key: "id", label: "ID" },
+      //{ key: "id", label: "ID" },
       { key: "title", label: "Title" },
       { key: "station.name", label: "Station" },
       { key: "version", label: "Version" },
@@ -101,10 +101,10 @@ function normalizeForForm(section, row) {
   if (section === "shifts") {
     const staffIds = (row.assignments || [])
       .filter((item) => item.assignmentRole === "staff")
-      .map((item) => Number(item.userId));
+      .map((item) => item.userId);
     const supervisorIds = (row.assignments || [])
       .filter((item) => item.assignmentRole === "supervisor")
-      .map((item) => Number(item.userId));
+      .map((item) => item.userId);
     return {
       stationId: String(row.stationId || ""),
       name: row.name || "",
@@ -153,9 +153,9 @@ function buildPayload(section, form, isEdit) {
     return payload;
   }
   if (section === "shifts") {
-    const stationId = Number(form.stationId);
+    const stationId = form.stationId;
     if (!stationId) throw new Error("Please select a station.");
-    
+
     return {
       stationId,
       name: form.name,
@@ -168,7 +168,7 @@ function buildPayload(section, form, isEdit) {
     };
   }
 
-  const stationId = Number(form.stationId);
+  const stationId = form.stationId;
   if (!stationId) throw new Error("Please select a station.");
 
   const cleanItems = (form.items || [])
@@ -288,13 +288,12 @@ export default function AdminPage({ auth, onLogout }) {
   }
 
   function toggleSelectId(field, id) {
-    const numericId = Number(id);
     setForm((prev) => {
       const current = prev[field] || [];
-      const exists = current.includes(numericId);
+      const exists = current.includes(id);
       return {
         ...prev,
-        [field]: exists ? current.filter((item) => item !== numericId) : [...current, numericId],
+        [field]: exists ? current.filter((item) => item !== id) : [...current, id],
       };
     });
   }
@@ -566,7 +565,7 @@ export default function AdminPage({ auth, onLogout }) {
     <main className="admin-layout">
       <aside className="admin-sidebar">
         <div>
-          <h2>Admin Panel</h2>
+          <h2>{auth.user.panelName || "Admin Panel"}</h2>
           <p className="muted">{welcome}</p>
           {Object.keys(sectionConfig).map((section) => (
             <button

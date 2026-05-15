@@ -97,7 +97,7 @@ export default function StaffPage({ auth, onLogout }) {
     <main className="admin-layout">
       <aside className="admin-sidebar">
         <div>
-          <h2>Staff Panel</h2>
+          <h2>{auth.user.panelName || "Staff Panel"}</h2>
           <p className="muted">{welcome}</p>
           <button className="nav-btn nav-btn-active">My Shift Checklists</button>
         </div>
@@ -147,7 +147,7 @@ export default function StaffPage({ auth, onLogout }) {
                     <td>
                       <button
                         className="btn-subtle"
-                        onClick={() => loadChecklist(assignment.shiftId)}
+                        onClick={() => loadChecklist(assignment.shift.id)}
                       >
                         {assignment.isSubmitted ? "View Submission" : "Open Checklist"}
                       </button>
